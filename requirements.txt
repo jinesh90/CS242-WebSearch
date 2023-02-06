@@ -1,0 +1,2 @@
+praw == 7.5.0
+elasticsearch == 7.1.0
