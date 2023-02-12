@@ -5,7 +5,7 @@ from datetime import datetime
 from elasticsearch import Elasticsearch, TransportError
 
 
-def SingleThreadRedditCrawler(reddit, topic, subject):
+def SingleThreadRedditCrawler (reddit, topic, subject):
     """
     single thread reddit crawler based on subreddit.
     :param reddit: reddit connection object
@@ -24,12 +24,12 @@ def SingleThreadRedditCrawler(reddit, topic, subject):
                 data_object["title"] = submission.title
                 data_object["reddit_id"] = submission.id
                 data_object["total_comments"] = submission.num_comments
-                #print(datetime.fromtimestamp(submission.created))
-                data_object["created"] = submission.created
+                data_object["created"] = (submission.created) * 1000
                 data_object["text"] = submission.selftext
                 data_object["url"] = submission.url
                 dt_object = datetime.fromtimestamp(submission.created)
-                index_name = "{}-{}".format(sub.lower(), dt_object.strftime('%Y-%m-%d'))
+                # index_name = "{}-{}".format(sub.lower(), dt_object.strftime('%Y-%m-%d'))
+                index_name = "test-data-volume-all"
                 submission.comments.replace_more(limit=1)
                 comment_lists = list()
                 for comment in submission.comments.list():
@@ -43,6 +43,7 @@ def SingleThreadRedditCrawler(reddit, topic, subject):
                 try:
                     es_client = Elasticsearch(host="localhost", port=9200)
                     if es_client.indices.exists(index=index_name):
+
                         es_client.index(index=index_name, doc_type='json', id=str(uuid.uuid4()),
                                         body=json.dumps(data_object))
                     else:
@@ -59,5 +60,7 @@ if __name__ == '__main__':
                          username="",
                          password="")
     topic = ["MachineLearning"]
-    subject = "Machine Learning"
-    SingleThreadRedditCrawler(reddit, topic, subject)
+    subject = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u',
+               'v', 'w', 'x', 'y', 'z']
+    for s in subject:
+        SingleThreadRedditCrawler(reddit, topic, s)
