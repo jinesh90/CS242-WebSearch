@@ -1,12 +1,21 @@
 import praw
 import json
 import uuid
+import argparse
 from multiprocessing import Process
 from datetime import datetime
 from elasticsearch import Elasticsearch, TransportError
 
 
-def SingleProcessRedditCrawler(reddit, topic, subject, es_client, local_save=True):
+parser = argparse.ArgumentParser(description='Reddit Crawler for crawling reddit posts.')
+parser.add_argument('--local', '-l', default=True, required=False, help='Save crawler data locally.')
+parser.add_argument('--id', '-i', default="", required=True, help='Reddit Client APP Id')
+parser.add_argument('--secret', '-s', default="", required=True, help='Reddit Client Secret')
+parser.add_argument('--username', '-u', default="", required=True, help='Reddit UserName')
+parser.add_argument('--password', '-p', default="", required=True, help='Reddit Password')
+
+
+def SingleProcessRedditCrawler(reddit, topic, subject, es_client, local_save):
     """
     single thread reddit crawler based on subreddit.
     :param reddit: reddit connection object
@@ -16,7 +25,7 @@ def SingleProcessRedditCrawler(reddit, topic, subject, es_client, local_save=Tru
     :param local_save: Saving documents locally instead of saving to elastic search.
     :return:
     """
-    with open("{}.txt".format(topic), "w+") as df:
+    with open("{}.jsonl".format(topic), "w+") as df:
         # create subreedit (r/MachineLearning, r/DataScience ) etc
         subreddit = reddit.subreddit(topic)
         for q in subject:
@@ -69,7 +78,7 @@ def SingleProcessRedditCrawler(reddit, topic, subject, es_client, local_save=Tru
                                 es_client.create(index=index_name, doc_type='json', id=str(uuid.uuid4()),
                                              body=json.dumps(data_object))
                         except TransportError as e:
-                            raise ValueError("Problem in {} connection, Error is {}".format(es_client, e.message))
+                            raise ValueError("Problem in {} connection, Error is {}".format("localhost", e.message))
                     else:
                         df.writelines(json.dumps(data_object) + '\n')
     df.close()
@@ -77,12 +86,24 @@ def SingleProcessRedditCrawler(reddit, topic, subject, es_client, local_save=Tru
 
 if __name__ == '__main__':
 
+    # arg
+    args = parser.parse_args()
+    client_id = args.id
+    client_secret = args.secret
+    reddit_username = args.username
+    reddit_password = args.password
+
+    local_save = args.local
+
+    # store data locally.
+    is_local = args.local
+
     # create reddit praw object with client id for creating developer access follow this link: https://medium.com/geekculture/utilizing-reddits-api-8d9f6933e192
-    reddit = praw.Reddit(client_id="",
-                         client_secret="",
-                         user_agent="",
-                         username="",
-                         password="")
+    reddit = praw.Reddit(client_id=client_id,
+                         client_secret=client_secret,
+                         user_agent="my crawler",
+                         username=reddit_username,
+                         password=reddit_password)
     topic_list = []
 
     # elastic search obj
@@ -99,5 +120,5 @@ if __name__ == '__main__':
     # create multiple processes per subreddit topics mentioned in subreddit_list.txt
     for t in topic_list:
         print("crawling for topic: {}".format(t))
-        p = Process(target=SingleProcessRedditCrawler, args=(reddit, t, subject, es_client,))
+        p = Process(target=SingleProcessRedditCrawler, args=(reddit, t, subject, es_client,local_save))
         p.start()
