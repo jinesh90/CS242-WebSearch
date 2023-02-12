@@ -69,7 +69,7 @@ def SingleProcessRedditCrawler(reddit, topic, subject, es_client, local_save=Tru
                                 es_client.create(index=index_name, doc_type='json', id=str(uuid.uuid4()),
                                              body=json.dumps(data_object))
                         except TransportError as e:
-                            raise ValueError("Problem in {} connection, Error is {}".format("localhost", e.message))
+                            raise ValueError("Problem in {} connection, Error is {}".format(es_client, e.message))
                     else:
                         df.writelines(json.dumps(data_object) + '\n')
     df.close()
