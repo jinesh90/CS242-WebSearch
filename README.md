@@ -27,3 +27,9 @@ Crawler is using multiprocessing for crawling data from different-different subr
  * Step 2: Make sure you have enough space ( ~800 MB).
  * Step 3: run run.sh file, like `/.run.sh` 
  * Step 4: will see crwaler in action.
+
+# How to Run Web UI locally?
+* Step 1: go to webapps rest-server.py
+* Step 2:Run rest-server.py
+* Step 3: goto http://127.0.0.1:5000
+* Step 4: query search term with either "luecene" or "BERT" index.
