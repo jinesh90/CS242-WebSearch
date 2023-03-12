@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Search</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  </head>
+  <body>
+    {% if error %}
+      <p style="color:red">{{ error }}</p>
+    {% endif %}
+    <form method="post">
+      <input type="text" name="search_term" placeholder="Search...">
+      <br>
+      <input type="radio" id="lucene" name="search_type" value="lucene">
+      <label for="lucene">Lucene</label>
+      <br>
+      <input type="radio" id="bert" name="search_type" value="bert">
+      <label for="bert">BERT</label>
+      <br>
+      <button type="submit">Search</button>
+    </form>
+  </body>
+</html>
