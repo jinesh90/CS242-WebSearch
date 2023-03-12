@@ -2,11 +2,11 @@ from elasticsearch import Elasticsearch
 from flask import Flask, request, render_template
 
 
-ES_ENDPOINT = 'search-cs242-knionzyqzacbeqerlruchgu6rm.us-west-2.es.amazonaws.com'
+ES_ENDPOINT = ''
 
 
-es_client = Elasticsearch(host="search-cs242-knionzyqzacbeqerlruchgu6rm.us-west-2.es.amazonaws.com",
-                          http_auth=('root', 'GoGetOne123$'), port=443, use_ssl=True,timeout=60, max_retries=10,
+es_client = Elasticsearch(host="",
+                          http_auth=('', ''), port=443, use_ssl=True,timeout=60, max_retries=10,
                           retry_on_timeout=True)
 
 
